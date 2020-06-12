@@ -1,6 +1,16 @@
 FROM centos:8
 
-RUN yum install -y gcc-c++ make perl \
+RUN yum install gcc-c++ make perl openssl-devel python3-devel libffi-devel -y \
+	&& mkdir python38_install \
+	&& cd python38_install \
+	&& curl -LO https://www.python.org/ftp/python/3.8.3/Python-3.8.3.tgz \
+	&& tar xvf Python-3.8.3.tgz \
+	&& cd Python-3.8*/ \
+	&& ./configure --enable-optimizations \
+	&& make altinstall -j$(nproc) \
+	&& cd ../../ \
+	&& rm -rf python38_install \
+	&& python3.8 -m pip install PySocks psutil \
     \
     && curl -LO https://www.openssl.org/source/openssl-1.1.1g.tar.gz \
     && tar xf openssl-1.1.1g.tar.gz \
@@ -34,3 +44,4 @@ RUN yum install -y gcc-c++ make perl \
     && make -j$(nproc) install \
     && cd .. \
     && rm -rf mariadb-connector-c-3.1.7-src.tar.gz mariadb-connector-c-3.1.7-src
+	
